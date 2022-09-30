@@ -8,15 +8,10 @@ const orderSchema = Schema(
         addressShiping: { type: String, require: true },
         phone: { type: Number, require: true },
         products: [{
-            name: { type: String, require: true },
-            price: { type: Number, require: true },
+            product: { type: Schema.Types.ObjectId, require: true, ref: "Product" },
             amount: { type: Number, require: true },
             sum: { type: Number, require: true },
-
-            sellerId: {
-                type: Schema.Types.ObjectId, require: true,
-                ref: "Seller"
-            },
+            sellerId: { type: String, require: true },
         }],
         priceShiping: { type: Number, require: true },
         total: { type: Number, require: true },

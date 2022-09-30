@@ -13,11 +13,9 @@ productController.createNewProduct = catchAsync(async (req, res, next) => {
     if (product)
         throw new AppError(400, "Product already exists", " Err Create Product")
 
-
     product = await Product.create({ productName, describe, foods, price, priceSale, unit, image, rating, author: currentSellertId })
 
     product = await product.populate("author");
-
 
     sendResponse(
         res,
@@ -34,30 +32,66 @@ productController.getProduct = catchAsync(async (req, res, next) => {
 
     let { page, limit, name, ...filterQuery } = req.query
 
-    page = parseInt(page) || 1;
-    limit = parseInt(limit) || 10;
-
     const filterKeys = Object.keys(filterQuery);
     if (filterKeys.length)
         throw new AppError(400, "Not accepted query", "Bad Request");
 
+    const filterConditions = [{ isDeleted: false }]
+    if (name) {
+        filterConditions.push({
+            productName: { $regex: name, $options: "i" },
+        })
+    }
+    const filterCritera = filterConditions.length
+        ? { $and: filterConditions }
+        : {};
 
-    const count = await Product.countDocuments()
+    const count = await Product.countDocuments(filterCritera)
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 10;
     const totalPages = Math.ceil(count / limit);
     const offset = limit * (page - 1)
 
-    let Products = await Product.find({ isDeleted: false })
+    let Products = await Product.find(filterCritera)
         .sort({ createdAt: -1 })
         .populate("author")
         .limit(limit)
         .skip(offset)
 
-    if (name)
-        Products = Products.filter((product) => {
-            if (product.productName) {
-                return (product.productName.toLowerCase().includes(name.toLowerCase()));
-            }
+    return sendResponse(res, 200, true, { Products, totalPages, count }, null, "Get Currenr Product successful")
+
+})
+
+
+productController.getProductCurrentId = catchAsync(async (req, res, next) => {
+
+    let { page, limit, name, ...filterQuery } = req.query
+    let userId = req.params.id
+    const filterKeys = Object.keys(filterQuery);
+    if (filterKeys.length)
+        throw new AppError(400, "Not accepted query", "Bad Request");
+
+    const filterConditions = [{ isDeleted: false, author: userId }]
+    if (name) {
+        filterConditions.push({
+            productName: { $regex: name, $options: "i" },
         })
+    }
+    const filterCritera = filterConditions.length
+        ? { $and: filterConditions }
+        : {};
+
+    const count = await Product.countDocuments(filterCritera)
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 10;
+    const totalPages = Math.ceil(count / limit);
+    const offset = limit * (page - 1)
+
+    let Products = await Product.find(filterCritera)
+        .sort({ createdAt: -1 })
+        .populate("author")
+        .limit(limit)
+        .skip(offset)
 
     return sendResponse(res, 200, true, { Products, totalPages, count }, null, "Get Currenr Product successful")
 

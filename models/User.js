@@ -7,14 +7,23 @@ const userSchema = Schema(
     {
         name: { type: String, required: true },
         email: { type: String, required: true, unique: true },
-        password: { type: String, required: true, select: false },
+        password: { type: String, required: true },
 
         avataUrl: { type: String, required: false, default: "" },
+        shopName: { type: String, required: false, default: "" },
+        logoUrl: { type: String, required: false, default: "" },
+        phone: { type: Number, required: false },
         address: { type: String, required: false, default: "" },
-        phone: { type: Number, required: false, },
+        city: { type: String, required: false, default: "" },
+        country: { type: String, required: false, default: "" },
+        company: { type: String, required: false, default: "" },
+
         comment: { type: String, required: false, default: "" },
 
+        buyer: { type: Boolean, default: false, select: false },
+        seller: { type: Boolean, default: false, select: false },
         isDeleted: { type: Boolean, default: false, select: false },
+        productCount: { type: Number, default: 0 },
 
     },
     { timestamps: true }

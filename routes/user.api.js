@@ -7,12 +7,12 @@ const authentication = require("../middlewares/authentication");
 
 
 /**
- * @route POST /users
- * @description Register new user
+ * @route POST /users/buyer
+ * @description Register new user buyer
  * @body {name, email, password}
  * @access public 
  */
-router.post("/",
+router.post("/buyer",
     validators.validate([
         body("name", "Invalid name").exists().notEmpty,
         body("email", "Invalid email")
@@ -20,7 +20,24 @@ router.post("/",
             .isEmail()
             .normalizeEmail({ gmail_remove_dots: false }),
         body("password", "Invalid password").exists().notEmpty(),
-    ]), userController.register)
+    ]), userController.registerUser)
+
+
+/**
+ * @route POST /users/seller
+ * @description Register new user seller
+ * @body {name, email, password}
+ * @access public 
+ */
+router.post("/seller",
+    validators.validate([
+        body("name", "Invalid name").exists().notEmpty,
+        body("email", "Invalid email")
+            .exists()
+            .isEmail()
+            .normalizeEmail({ gmail_remove_dots: false }),
+        body("password", "Invalid password").exists().notEmpty(),
+    ]), userController.registerSeller)
 
 
 /**
@@ -46,17 +63,32 @@ router.get("/:id",
 
 
 /**
- * @route PUT /users/:id
- * @description Update user profile
+ * @route PUT /users/buyer/:id
+ * @description Update user buyer profile
  * @body {name, avataUrl,address}
  * @access Login required
  */
-router.put("/:id",
+router.put("/buyer/:id",
     authentication.loginRequired,
     validators.validate([
         param("id").exists().isString().custom(validators.checkObjectId)
     ]),
-    userController.updateProfile)
+    userController.updateProfileUserBuyer)
+
+
+/**
+ * @route PUT /users/seller/:id
+ * @description Update user seller profile
+ * @body {name, avataUrl,address}
+ * @access Login required
+ */
+router.put("/seller/:id",
+    authentication.loginRequired,
+    validators.validate([
+        param("id").exists().isString().custom(validators.checkObjectId)
+    ]),
+    userController.updateProfileUserSeller)
+
 
 
 

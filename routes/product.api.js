@@ -36,11 +36,24 @@ router.get("/", productController.getProduct)
 
 
 /**
- * @route GET /products/:id
- * @description Get a product
+ * @route GET /products/:id?page=1&limit=10&name=`$productName`
+ * @description Get products with pagination
  * @access public
  */
 router.get("/:id",
+    authentication.loginRequired,
+    validators.validate([
+        param("id").exists().isString().custom(validators.checkObjectId)
+    ]),
+    productController.getProductCurrentId)
+
+
+/**
+ * @route GET /products/detail/:id
+ * @description Get a product
+ * @access public
+ */
+router.get("/detail/:id",
     authentication.loginRequired,
     validators.validate([
         param("id").exists().isString().custom(validators.checkObjectId)

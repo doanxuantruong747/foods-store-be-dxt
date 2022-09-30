@@ -27,7 +27,20 @@ router.post(
  * @description Get Oders with pagination
  * @access public
  */
-router.get("/", authentication.loginRequired, orderController.getOrder)
+router.get("/",
+    authentication.loginRequired,
+    orderController.getOrder)
+
+
+
+/**
+ * @route GET /oders/seller?page=1&limit=10
+ * @description Get Oders with pagination
+ * @access public
+ */
+router.get("/seller",
+    authentication.loginRequired,
+    orderController.getOrderSeller)
 
 
 /**

@@ -10,10 +10,11 @@ authController.loginWithEmail = catchAsync(async (req, res, next) => {
     // get data from request
     let { email, password } = req.body
 
+    //Invalid Credentials
     // Business Logic Validation
-    let user = await User.findOne({ email }, "+password");
+    let user = await User.findOne({ email, buyer: true }, "+password");
     if (!user)
-        throw new AppError(400, "Invalid Credentials", "Login Err")
+        throw new AppError(400, "email doesn't exist", "Login Err")
 
     //process
     const isMatch = await bcrypt.compare(password, user.password);
@@ -37,7 +38,7 @@ authController.loginSellerWithEmail = catchAsync(async (req, res, next) => {
     let { email, password } = req.body
 
     // Business Logic Validation
-    let seller = await Seller.findOne({ email }, "+password");
+    let seller = await Seller.findOne({ email, seller: true }, "+password");
     if (!seller)
         throw new AppError(400, "Invalid Credentials", "Login Err")
 

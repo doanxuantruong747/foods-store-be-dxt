@@ -6,7 +6,7 @@ const productSchema = Schema(
     {
         productName: { type: String, required: true },
         describe: { type: String, required: true },
-        foods: { type: String, enum: ["Processing", "Unprocessed"], required: true },
+        foods: { type: String, enum: ["Processing", "Unprocessed", "Vegetable"], required: true },
         price: { type: Number, required: true },
         priceSale: { type: Number, required: false },
         unit: { type: String, required: true },
@@ -19,7 +19,7 @@ const productSchema = Schema(
         author: {
             type: Schema.Types.ObjectId,
             required: true,
-            ref: "Seller",
+            ref: "User",
         },
 
 

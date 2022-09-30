@@ -37,21 +37,77 @@ orderController.getOrder = catchAsync(async (req, res, next) => {
     const totalPages = Math.ceil(count / limit);
     const offset = limit * (page - 1)
 
-
     let orders = await Order.find({ isDeleted: false, userId })
         .sort({ createdAt: -1 })
         .populate("userId")
+        .populate({
+            path: 'products',
+            populate: { path: 'product' }
+        })
         .limit(limit)
         .skip(offset)
 
-    if (name)
-        orders = orders.filter((order) => {
-            if (order.name) {
-                return (order.name.toLowerCase().includes(name.toLowerCase()));
-            }
-        })
 
     return sendResponse(res, 200, true, { orders, totalPages, count }, null, "Get Currenr Order successful")
+
+})
+
+orderController.getOrderSeller = catchAsync(async (req, res, next) => {
+
+    const userId = req.userId;
+    let { page, limit, status, ...filterQuery } = req.query
+
+    const filterKeys = Object.keys(filterQuery);
+    if (filterKeys.length)
+        throw new AppError(400, "Not accepted query", "Bad Request");
+
+    const filterConditions = [{ isDeleted: false }]
+    if (status) {
+        filterConditions.push({
+            status: { $regex: status, $options: "i" },
+        })
+    }
+    const filterCritera = filterConditions.length
+        ? { $and: filterConditions }
+        : {};
+
+    const count = await Order.countDocuments(filterCritera)
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 10;
+    const totalPages = Math.ceil(count / limit);
+    const offset = limit * (page - 1)
+
+    let orders = await Order.find(filterCritera)
+        .sort({ createdAt: -1 })
+        .populate("userId")
+        .populate({
+            path: 'products',
+            populate: { path: 'product' },
+        })
+        .limit(limit)
+        .skip(offset)
+
+    let ordersSeller = []
+    orders.map((order) => {
+        order.products.forEach((product) => {
+            if (product.sellerId === userId)
+                ordersSeller = [...ordersSeller, {
+                    orderId: order._id,
+                    buyerName: order.name,
+                    addressShiping: order.addressShiping,
+                    phone: order.phone,
+                    productName: product.product.productName,
+                    price: product.product.price,
+                    amount: product.amount,
+                    sum: product.sum,
+                    status: order.status
+                }]
+        })
+    })
+
+    const countCurent = ordersSeller.length
+
+    return sendResponse(res, 200, true, { ordersSeller, totalPages, count, countCurent }, null, "Get Currenr Order successful")
 
 })
 
@@ -73,15 +129,14 @@ orderController.getSingleOrder = catchAsync(async (req, res, next) => {
 
 orderController.updateSingleOrder = catchAsync(async (req, res, next) => {
 
-    const orderId = req.params.id;
+    const id = req.params.id;
 
-    let order = await Order.findById(orderId);
+    let order = await Order.findById(id);
+    console.log(order)
     if (!order) throw new AppError(400, "Order not found", "Update Order Error")
 
-
     const allows = [
-        "amount",
-        "status"
+        "status",
     ];
     allows.forEach((field) => {
         if (req.body[field] !== undefined) {
@@ -89,7 +144,6 @@ orderController.updateSingleOrder = catchAsync(async (req, res, next) => {
         }
     });
     await order.save();
-
     return sendResponse(res, 200, true, order, null, "Update Order successful")
 });
 
