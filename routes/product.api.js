@@ -10,7 +10,7 @@ const authentication = require("../middlewares/authentication");
 /**
  * @route POST /products
  * @description Create a new products
- * @body {name, imge,describe,foods:[ foodProcessing,unprocessedFood], price,unit,amount}
+ * @body {name, imge,describe,foods:[ Processing,Unprocessed, Vegetable], price,unit,amount}
  * @access Seller Login required
  */
 router.post(

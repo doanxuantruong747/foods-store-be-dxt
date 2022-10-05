@@ -45,7 +45,9 @@ router.post("/seller",
  * @description Get current user info
  * @access Login required
  */
-router.get("/me", authentication.loginRequired, userController.getCurrentUser)
+router.get("/me",
+    authentication.loginRequired,
+    userController.getCurrentUser)
 
 
 /**

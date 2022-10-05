@@ -124,6 +124,7 @@ productController.updateSingleProduct = catchAsync(async (req, res, next) => {
         "describe",
         "foods",
         "price",
+        "priceSale",
         "unit",
         "image"
     ];

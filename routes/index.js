@@ -15,10 +15,6 @@ router.use("/auth", authApi)
 const usersApi = require('./user.api');
 router.use("/users", usersApi)
 
-//sellerApi
-const sellerApi = require('./seller.api');
-router.use("/sellers", sellerApi)
-
 //productApi
 const productApi = require('./product.api');
 router.use("/products", productApi)

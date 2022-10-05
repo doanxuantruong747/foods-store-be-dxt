@@ -71,7 +71,6 @@ router.put("/:id",
     orderController.updateSingleOrder)
 
 
-
 /**
  * @route DELETE /oders/:id
  * @description Delete a oder
