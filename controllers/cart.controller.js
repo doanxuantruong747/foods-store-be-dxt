@@ -7,7 +7,6 @@ cartController.createCart = catchAsync(async (req, res, next) => {
 
     const currentuserId = req.userId;
 
-
     let { productId } = req.body;
 
     let cart = await Cart.findOne({ productId, author: currentuserId })
@@ -16,6 +15,7 @@ cartController.createCart = catchAsync(async (req, res, next) => {
         cart.amount += 1;
         await cart.save()
     }
+
     if (!cart) {
         cart = await Cart.create({ amount: 1, productId, author: currentuserId })
     }

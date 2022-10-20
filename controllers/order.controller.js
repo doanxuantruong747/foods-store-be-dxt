@@ -11,7 +11,6 @@ orderController.createNewOrder = catchAsync(async (req, res, next) => {
     const userId = req.userId;
     const { name, addressShiping, phone, products, priceShiping, total } = req.body
     //process
-
     let order = await Order.create({
         name, addressShiping, phone, products, priceShiping, total, userId: userId
     })

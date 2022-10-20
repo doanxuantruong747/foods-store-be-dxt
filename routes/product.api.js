@@ -54,7 +54,7 @@ router.get("/:id",
  * @access public
  */
 router.get("/detail/:id",
-    authentication.loginRequired,
+
     validators.validate([
         param("id").exists().isString().custom(validators.checkObjectId)
     ]),
