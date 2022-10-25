@@ -14,6 +14,7 @@ const productSchema = Schema(
 
         rating: { type: Number, required: false },
         feedback: { type: [{}], required: false },
+        statusSale: { type: String, enum: ["Normal", "Prominent", "SellFast"], default: "Normal", required: true },
         isDeleted: { type: Boolean, default: false, required: true },
 
         author: {
