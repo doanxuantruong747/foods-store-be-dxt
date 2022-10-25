@@ -62,6 +62,40 @@ productController.getProduct = catchAsync(async (req, res, next) => {
 
 })
 
+productController.getProductProminent = catchAsync(async (req, res, next) => {
+
+    let { page, limit, name, ...filterQuery } = req.query
+
+    const filterKeys = Object.keys(filterQuery);
+    if (filterKeys.length)
+        throw new AppError(400, "Not accepted query", "Bad Request");
+
+    const filterConditions = [{ isDeleted: false, statusSale: "Prominent" }]
+    if (name) {
+        filterConditions.push({
+            productName: { $regex: name, $options: "i" },
+        })
+    }
+    const filterCritera = filterConditions.length
+        ? { $and: filterConditions }
+        : {};
+
+    const count = await Product.countDocuments(filterCritera)
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 10;
+    const totalPages = Math.ceil(count / limit);
+    const offset = limit * (page - 1)
+
+    let Products = await Product.find(filterCritera)
+        .sort({ createdAt: -1 })
+        .populate("author")
+        .limit(limit)
+        .skip(offset)
+
+    return sendResponse(res, 200, true, { Products, totalPages, count }, null, "Get Currenr Product successful")
+
+})
+
 
 productController.getProductCurrentId = catchAsync(async (req, res, next) => {
 

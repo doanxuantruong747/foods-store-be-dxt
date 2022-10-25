@@ -34,6 +34,13 @@ router.post(
  */
 router.get("/", productController.getProduct)
 
+/**
+ * @route GET /products/productsProminent?page=1&limit=10&name=`$productName`
+ * @description Get products with pagination
+ * @access public
+ */
+router.get("/productsProminent", productController.getProductProminent)
+
 
 /**
  * @route GET /products/:id?page=1&limit=10&name=`$productName`
